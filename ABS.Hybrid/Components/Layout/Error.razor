@@ -1,0 +1,11 @@
+﻿<h3>An error has occured</h3>
+@ErrorContent
+<p style="color: red;">@ErrorMessage</p>
+
+@code {
+    [Parameter]
+    public RenderFragment? ErrorContent { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+}

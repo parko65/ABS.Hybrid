@@ -1,0 +1,31 @@
+﻿
+    <EditForm EditContext="_editContext">
+        <DataAnnotationsValidator />
+
+        <FluentStack Orientation="Orientation.Vertical">
+            <div>
+                <FluentSelect Items="Destinations"
+                    Label="Select a destination"
+                              OptionText="@(d => d.Name)"
+                              Height="250px"
+                              Width="150px"
+                              Placeholder="Select a destination"
+                              @bind-SelectedOption="@_selectedDestination">
+                </FluentSelect>
+            </div>
+            <div>
+                <FluentTextField @bind-Value="_jobForCreation.JobInput" Label="Job Number" Placeholder="Enter job number" AutoComplete="off" />
+                <FluentValidationMessage For="@(() => _jobForCreation.JobInput)" />
+            </div>
+            <div>
+                <FluentTextField @bind-Value="_jobForCreation.TonnageInput" Label="Tonnage" Placeholder="Enter tonnage" AutoComplete="off" />
+                <FluentValidationMessage For="@(() => _jobForCreation.TonnageInput)" />
+            </div>
+        </FluentStack>
+    </EditForm>
+
+    <div style="margin-top: 8px;">
+        <FluentButton OnClick="CreateJobAsync" Appearance="Appearance.Stealth">Add to queue</FluentButton>
+    </div>
+
+

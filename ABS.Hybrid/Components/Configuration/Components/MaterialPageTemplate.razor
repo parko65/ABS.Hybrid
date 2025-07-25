@@ -1,0 +1,31 @@
+@using ABS.Hybrid.Components.Common
+@using ABS.Hybrid.Components.Configuration.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Shared.DataTransferObjects
+
+<FluentStack Style="margin-bottom: 24px;" VerticalAlignment="VerticalAlignment.Center">
+    <PageHeader Title="@Title" Typo="Typography.Header" Icon="@Icon" />
+</FluentStack>
+
+<MaterialsGrid Materials="Materials.AsQueryable()" MaterialType="Type" OnMaterialEdited="LoadMaterialsAsync" OnMaterialSelected="HandleMaterialSelected" />
+
+<FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Style="margin-top: 24px;">
+    <FluentButton Appearance="Appearance.Outline" OnClick="OpenMaterialForCreationDialog">Create @(Type == null ? "" : Type.Name)</FluentButton>
+    <FluentButton Disabled="IsDeleteDisabled" OnClick="DeleteMaterialAsync">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Error" Slot="start" />
+        Delete @(SelectedMaterial == null ? "" : SelectedMaterial.Name)
+    </FluentButton>
+</FluentStack>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public Icon Icon { get; set; } = new Icons.Regular.Size24.Archive();
+    [Parameter] public IEnumerable<MaterialDto> Materials { get; set; } = new List<MaterialDto>();
+    [Parameter] public MaterialTypeDto? Type { get; set; }
+    [Parameter] public bool IsDeleteDisabled { get; set; } = true;
+    [Parameter] public MaterialDto? SelectedMaterial { get; set; }
+    [Parameter] public EventCallback LoadMaterialsAsync { get; set; }
+    [Parameter] public EventCallback OpenMaterialForCreationDialog { get; set; }
+    [Parameter] public EventCallback<MaterialDto> HandleMaterialSelected { get; set; }
+    [Parameter] public EventCallback DeleteMaterialAsync { get; set; }
+}

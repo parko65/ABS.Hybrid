@@ -1,0 +1,20 @@
+﻿@inherits LayoutComponentBase
+@layout ABS.Hybrid.Components.Layout.MainLayout
+
+<h2>Recipe Editor</h2>
+<div>
+    <h4>Change system recipe settings</h4>
+    <hr />
+    <FluentGrid>
+        <FluentGridItem sm="3">
+            <RecipesNavMenu />
+        </FluentGridItem>
+        <FluentGridItem sm="9">
+            @Body
+        </FluentGridItem>
+    </FluentGrid>
+</div>
+
+@code {
+
+}

@@ -1,0 +1,19 @@
+﻿﻿<FluentCard>
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="10">
+        <FluentIcon Value="Icon" Color="Color.Accent" />
+        <FluentLabel Typo="Typo">@Title</FluentLabel>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string Title { get; set; } = "No title specified";
+
+    [Parameter]
+    [EditorRequired]
+    public Typography Typo { get; set; } = Typography.Header;
+
+    [Parameter]
+    public Icon Icon { get; set; } = new Icons.Regular.Size24.Info();
+}

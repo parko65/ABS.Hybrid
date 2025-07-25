@@ -1,0 +1,16 @@
+﻿@inherits LayoutComponentBase
+@layout ABS.Hybrid.Components.Layout.MainLayout
+
+<h2>System Configuration</h2>
+<div>
+    <h4>Change your material settings</h4>
+    <hr />
+    <FluentGrid>
+        <FluentGridItem sm="3">
+            <ConfigurationNavMenu />
+        </FluentGridItem>
+        <FluentGridItem sm="9">
+            @Body
+        </FluentGridItem>
+    </FluentGrid>
+</div>

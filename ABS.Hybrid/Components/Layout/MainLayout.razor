@@ -1,0 +1,84 @@
+﻿@using Microsoft.Extensions.Hosting
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@inherits LayoutComponentBase
+@inject IHostEnvironment Host
+
+<FluentDesignTheme @bind-Mode="@Mode"
+                   @bind-OfficeColor="@OfficeColor"
+                   StorageName="theme" />
+
+<FluentLayout>
+    <FluentHeader>
+        ABS Windows
+        <div style="margin-left: auto">
+            <FluentSelect Width="100px"
+                          Items="@(Enum.GetValues<DesignThemeModes>())"
+                          @bind-SelectedOption="@Mode" />
+        </div>       
+
+        <div style="margin-left: 1.5rem;">
+            <FluentSelect Items="@(Enum.GetValues<OfficeColor>().Select(i => (OfficeColor?)i))"
+                          Height="200px"
+                          Width="150px"
+                          @bind-SelectedOption="@OfficeColor">
+                <OptionTemplate>
+                    <FluentStack>
+                        <FluentIcon Value="@(new Icons.Filled.Size20.RectangleLandscape())"
+                                    Color="Color.Custom"
+                                    CustomColor="@(@context.ToAttributeValue() != "default" ? context.ToAttributeValue() : "#036ac4" )" />
+                        <FluentLabel>@context</FluentLabel>
+                    </FluentStack>
+                </OptionTemplate>
+            </FluentSelect>
+        </div>
+    </FluentHeader>
+    <FluentStack Class="main" Orientation="Orientation.Horizontal" Width="100%">
+        <NavMenu />
+        
+        <FluentBodyContent Class="body-content">            
+            <div class="content">
+                <FluentMessageBarProvider Section="@MESSAGES_TOP" ClearAfterNavigation="true" />                
+                <ErrorBoundary @ref="_errorBoundary">
+                    <ChildContent>                        
+                        @Body
+                    </ChildContent>
+                    <ErrorContent>                        
+                        <Error ErrorMessage="@context.Message">
+                            <ErrorContent>
+                                <p>Additional content goes here.</p>                                
+                            </ErrorContent>   
+                        </Error>
+                    </ErrorContent>
+                </ErrorBoundary>                
+            </div>
+            <FluentToastProvider MaxToastCount="5" Position="ToastPosition.BottomRight" Timeout="5000" />
+            <FluentDialogProvider />
+            <FluentTooltipProvider />
+        </FluentBodyContent>
+    </FluentStack>
+    <FluentFooter>
+        <a href="privacy">Privacy Information</a>
+        <FluentSpacer />
+        <a href="">&copy; 2025 - Road Builder @(Host.IsDevelopment() ? "(Development)" : "(Production)" )</a>
+        <FluentSpacer />
+        <a href="about">About Road Builder Hybrid</a>
+    </FluentFooter>
+</FluentLayout>
+
+@code {
+    private ErrorBoundary? _errorBoundary;
+
+    public const string MESSAGES_NOTIFICATION_CENTER = "NOTIFICATION_CENTER";
+    public const string MESSAGES_TOP = "TOP";
+    public const string MESSAGES_DIALOG = "DIALOG";
+    public const string MESSAGES_CARD = "CARD";
+
+    public DesignThemeModes Mode { get; set; }
+
+    public OfficeColor? OfficeColor { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _errorBoundary?.Recover();
+    }
+}

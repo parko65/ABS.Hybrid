@@ -1,0 +1,22 @@
+﻿﻿<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isPlcConnected = false;
+    public bool IsPlcConnected
+    {
+        get => _isPlcConnected;
+        set
+        {
+            if (_isPlcConnected != value)
+            {
+                _isPlcConnected = value;
+                StateHasChanged();
+            }
+        }
+    }    
+}

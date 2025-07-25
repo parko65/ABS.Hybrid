@@ -1,0 +1,13 @@
+﻿.form-select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #c8c8c8;
+    font-size: 14px;
+    height: 32px;
+}
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--accent-fill-rest);
+    }

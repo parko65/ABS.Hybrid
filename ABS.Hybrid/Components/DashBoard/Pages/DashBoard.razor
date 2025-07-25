@@ -1,0 +1,67 @@
+﻿@page "/"
+@using ABS.Hybrid.Components.Common
+@using ABS.Hybrid.Components.DashBoard.Components
+
+<FluentStack Style="margin-bottom: 24px;" VerticalAlignment="VerticalAlignment.Center">
+    <PageHeader Title="Dashboard" Typo="Typography.Header" Icon="@(new Icons.Regular.Size24.ContentViewGallery())" />
+    <p>@IsConnected</p>
+</FluentStack>
+
+<FluentGrid AdaptiveRendering="true" Spacing="4">
+    <FluentGridItem xs="9">
+        <JobsGrid Jobs="_jobs" OnJobSelected="SetSelectedJob" />
+        <FluentStack Orientation="Orientation.Horizontal" Style="margin: 24px 24px">
+            <FluentButton OnClick="DeleteSelectedJob" Disabled="@(_selectedJob == null ? true : false)">
+                Delete
+            </FluentButton>
+            <FluentButton OnClick="StartMixingAsync">
+                Start Mixing
+            </FluentButton>
+            <FluentButton Disabled="true">
+                Start Coldfeed
+            </FluentButton>
+            <FluentButton OnClick="CompleteMixingAsync">
+                Reset Job
+            </FluentButton>
+        </FluentStack>
+        <FluentGrid AdaptiveRendering="true">
+            <FluentGridItem xs="12" md="2">
+                <RecipesGrid Recipes="_recipes" OnRecipeSelected="RecipeSelected" />
+            </FluentGridItem>
+            <FluentGridItem xs="12" md="4">
+                <RecipeDetails Recipe="_selectedRecipe" DeleteRecipe="DeleteRecipeAsync" />
+            </FluentGridItem>
+            <FluentGridItem xs="12" md="6">
+                <JobCreationForm Destinations="_destinations" OnJobCreated="CreateJobAsync" />
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentGridItem>
+    <FluentGridItem xs="3">
+        <FluentAccordion ActiveId="accordian-1">
+            <FluentAccordionItem Heading="Logging" ExpandedChanged="LoggingAccordianChanged">
+                <FluentIcon Value="@(new Icons.Regular.Size20.DocumentCatchUp())" Color="@(IsConnected ? Color.Accent : Color.Neutral)" Slot="start" />
+                <div>
+                    @if (_tagModel != null)
+                    {
+                        <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom: 8px;">
+                            <FluentLabel Typo="Typography.Body">Job Id: </FluentLabel>
+                            <FluentLabel Typo="Typography.H6">@_tagModel.JobId</FluentLabel>
+                        </FluentStack>
+                        <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom: 8px;">
+                            <FluentLabel Typo="Typography.Body">Recipe No: </FluentLabel>
+                            <FluentLabel Typo="Typography.H6">@_tagModel.RecipeNumber</FluentLabel>
+                        </FluentStack>
+                        <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom: 8px;">
+                            <FluentLabel Typo="Typography.Body">Job No: </FluentLabel>
+                            <FluentLabel Typo="Typography.H6">@_tagModel.JobNumber</FluentLabel>
+                        </FluentStack>
+                        <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom: 8px;">
+                            <FluentLabel Typo="Typography.Body">Batch No: </FluentLabel>
+                            <FluentLabel Typo="Typography.H6">@_tagModel.BatchNumber</FluentLabel>
+                        </FluentStack>     
+                    }                    
+                </div>
+            </FluentAccordionItem>
+        </FluentAccordion>
+    </FluentGridItem>
+</FluentGrid>

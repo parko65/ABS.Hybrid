@@ -1,0 +1,18 @@
+﻿@page "/configuration/material-loading/reclaim"
+@using ABS.Hybrid.Components.Common
+@using Shared.DataTransferObjects
+
+<FluentStack Style="margin-bottom: 24px;" VerticalAlignment="VerticalAlignment.Center">
+    <PageHeader Title="Material Loading" Typo="Typography.Header" Icon="@(new Icons.Regular.Size24.WrenchScrewdriver())" />
+</FluentStack>
+
+<FluentDataGrid Items="StorageUnits.AsQueryable()" ShowHover="true" TGridItem="StorageUnitDto" OnRowClick="HandleRowClick" RowClass="GetRowClass">
+    <PropertyColumn Property="@(su => su.Name)" Title="Bin No." />
+    <PropertyColumn Property="@(m => m.Material != null ? m.Material.MaterialNumber : 0)" Title="Material No." />
+    <PropertyColumn Property="@(m => m.Material != null ? m.Material.Name : "Empty")" Title="Name" />
+</FluentDataGrid>
+
+<FluentStack Style="margin-top: 12px;">
+    <FluentSelect Items="Materials" TOption="MaterialDto" OptionText="@(m => m.Name)" @bind-SelectedOption="SelectedMaterial" Placeholder="Empty" />
+    <FluentButton Appearance="Appearance.Stealth" OnClick="ChangeMaterialStorageUnitAsync">Save</FluentButton>
+</FluentStack>

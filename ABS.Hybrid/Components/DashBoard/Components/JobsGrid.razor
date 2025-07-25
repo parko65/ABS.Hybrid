@@ -1,0 +1,15 @@
+﻿@using Shared.DataTransferObjects
+
+<div style="height: 400px;">
+    <FluentDataGrid Items="Jobs.AsQueryable()" ShowHover="true" TGridItem="JobDto" Pagination="@pagination"
+                    GridTemplateColumns="0.5fr 1fr 1fr 1fr 0.5fr" OnRowClick="HandleRowClick" RowClass="GetRowClass">
+        <PropertyColumn Property="@(j => j.JobNumber)" Title="Job Number" />
+        <PropertyColumn Property="@(j => j.Status)" Title="Status" />
+        <PropertyColumn Property="@(j => j.Recipe == null ? "No Recipe" : j.Recipe.Name)" Title="Recipe" />
+        <PropertyColumn Property="@(j => j.Destination == null ? "No Destination" : j.Destination.Name)" Title="Destination" />
+        <PropertyColumn Property="@(j => j.Tonnage)" Title="Tonnage" />
+    </FluentDataGrid>
+    <FluentPaginator State="@pagination" />
+</div>
+
+

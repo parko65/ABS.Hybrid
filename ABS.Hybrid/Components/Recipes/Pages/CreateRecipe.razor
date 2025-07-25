@@ -1,0 +1,235 @@
+﻿@page "/recipes/create-recipe"
+@using ABS.Hybrid.Components.Common
+@using Service.Contracts
+@using Shared.DataTransferObjects
+
+<FluentStack Style="margin-bottom: 24px;" VerticalAlignment="VerticalAlignment.Center">
+    <PageHeader Title="Create Recipe" Typo="Typography.Header" Icon="@(new Icons.Regular.Size24.Add())" />
+</FluentStack>
+
+<EditForm Model="Recipe" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+    <DataAnnotationsValidator />
+
+    <FluentCard>
+        <FluentStack Orientation="Orientation.Vertical">
+
+            <!-- Recipe Basic Information -->
+            <FluentGrid>
+                <FluentGridItem xs="12" md="6">
+                    <FluentTextField @bind-Value="Recipe.Name"
+                                     Label="Recipe Name"
+                                     Required="true" Style="width: 180px;"
+                                     AutoComplete="off" />
+                    <FluentValidationMessage For="@(() => Recipe.Name)" />
+                </FluentGridItem>
+
+                <FluentGridItem xs="12" md="6">
+                    <FluentTextField @bind-Value="Recipe.Title"
+                                     Label="Title"
+                                     Required="true"
+                                     AutoComplete="off" />
+                    <FluentValidationMessage For="@(() => Recipe.Title)" />
+                </FluentGridItem>
+            </FluentGrid>
+
+            <!-- Recipe Properties -->
+            <FluentGrid>
+                <FluentGridItem xs="12" md="4">
+                    <FluentNumberField @bind-Value="Recipe.BatchSize"
+                                       Label="Batch Size"
+                                       Min="1" Style="width: 180px;"
+                                       AutoComplete="off" />
+                    <FluentValidationMessage For="@(() => Recipe.BatchSize)" />
+                </FluentGridItem>
+
+                <FluentGridItem xs="12" md="4">
+                    <FluentNumberField @bind-Value="Recipe.MixTime"
+                                       Label="Mix Time (seconds)"
+                                       Min="0" Style="width: 180px;" AutoComplete="off"/>
+                    <FluentValidationMessage For="@(() => Recipe.MixTime)" />
+                </FluentGridItem>
+
+                <FluentGridItem xs="12" md="4">
+                    <FluentNumberField @bind-Value="Recipe.MixTemperature"
+                                       Label="Mix Temperature (°C)" AutoComplete="off"/>
+                    <FluentValidationMessage For="@(() => Recipe.MixTemperature)" />
+                </FluentGridItem>
+            </FluentGrid>
+
+            <FluentGrid>
+                <FluentGridItem xs="12" md="4">
+                    <FluentNumberField @bind-Value="Recipe.LowerTemperatureDeviation"
+                                       Label="Lower Temp Deviation" AutoComplete="off" />
+                    <FluentValidationMessage For="@(() => Recipe.LowerTemperatureDeviation)" />
+                </FluentGridItem>
+
+                <FluentGridItem xs="12" md="4">
+                    <FluentNumberField @bind-Value="Recipe.UpperTemperatureDeviation"
+                                       Label="Upper Temp Deviation" AutoComplete="off" />
+                    <FluentValidationMessage For="@(() => Recipe.UpperTemperatureDeviation)" />
+                </FluentGridItem>
+
+                <FluentGridItem xs="12" md="4">
+                    <FluentCheckbox @bind-Value="Recipe.IsBatchSizeFixed"
+                                    Label="Fixed Batch Size" />
+                </FluentGridItem>
+            </FluentGrid>
+
+            <!-- Form Actions -->
+            <FluentDivider />
+
+            <FluentStack Orientation="Orientation.Horizontal">
+                <FluentButton Type="ButtonType.Submit"
+                              Appearance="Appearance.Accent"
+                              Loading="IsSubmitting"
+                              Disabled="IsSubmitting"
+                              IconStart="@(IsSubmitting ? new Icons.Regular.Size16.ArrowClockwise() : new Icons.Regular.Size16.Save())">
+
+                    @if (IsSubmitting)
+                    {
+                        <span>Creating...</span>
+                    }
+                    else
+                    {
+                        <span>Create Recipe</span>
+                    }
+
+                </FluentButton>
+
+                <FluentButton Appearance="Appearance.Neutral"
+                              OnClick="Cancel"
+                              Disabled="IsSubmitting">
+                    Cancel
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+    </FluentCard>
+</EditForm>
+
+<p style="margin-top: 8px;">
+    @if (ErrorMessage != null)
+    {
+        <span style="color: red;">@ErrorMessage</span>
+    }
+    else
+    {
+        @(SelectedHotBins.Sum(r => double.TryParse(r.Take, out var take) ? take : 0)
+        + SelectedBitumenTanks.Sum(r => double.TryParse(r.Take, out var take) ? take : 0)
+        + SelectedFillerSilos.Sum(r => double.TryParse(r.Take, out var take) ? take : 0)
+        + SelectedAdditiveTanks.Sum(r => double.TryParse(r.Take, out var take) ? take : 0))
+    }    
+</p>
+
+<FluentGrid AdaptiveRendering="true">
+    <FluentGridItem xs="12" md="6">
+        <FluentTabs ActiveTabId="tab-1">
+            <FluentTab Id="tab-1">
+                <Header>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.AppFolder())" />
+                    <span style="margin-left: 4px;">Agg. Hot bins</span>
+                </Header>
+                <Content>
+                    <FluentDataGrid Items="AvailableHotBins" ShowHover="true" TGridItem="StorageUnitDto" RowSize="@DataGridRowSize.Medium">
+                        <SelectColumn TGridItem="StorageUnitDto"
+                                      SelectMode="DataGridSelectMode.Multiple"
+                                      SelectFromEntireRow="false"
+                                      @bind-SelectedItems="SelectedHotBins" />
+
+                        <PropertyColumn Property="@(s => s.Name)" Title="HotBin" />
+                        <PropertyColumn Property="@(s => s.Material == null ? "No Material" : s.Material.Name)" Title="Material" />
+                        <TemplateColumn Title="Take">
+                            <FluentTextField @bind-Value="@context!.Take" AutoComplete="off" Placeholder="0"/>
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </Content>
+            </FluentTab>
+            <FluentTab Id="tab-2">
+                <Header>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.ArrowCurveDownLeft())" />
+                    <span style="margin-left: 4px;">Coldfeed</span>
+                </Header>
+                <Content>
+                    <FluentDataGrid Items="AvailableColdfeeders" ShowHover="true" TGridItem="StorageUnitDto" RowSize="@DataGridRowSize.Medium">
+                        <SelectColumn TGridItem="StorageUnitDto"
+                                      SelectMode="DataGridSelectMode.Multiple"
+                                      SelectFromEntireRow="false"
+                                      @bind-SelectedItems="SelectedColdfeeders" />
+
+                        <PropertyColumn Property="@(s => s.Name)" Title="Feeder" />
+                        <PropertyColumn Property="@(s => s.Material == null ? "No Material" : s.Material.Name)" Title="Material" />
+                        <TemplateColumn Title="Take">
+                            <FluentTextField @bind-Value="@context!.Take" AutoComplete="off" Placeholder="0" />
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </Content>
+            </FluentTab>
+        </FluentTabs>
+    </FluentGridItem>
+
+    <FluentGridItem xs="12" md="6">
+        <FluentTabs ActiveTabId="tab-1">
+            <FluentTab Id="tab-1">
+                <Header>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Drop())" />
+                    <span style="margin-left: 4px;">Bitumen</span>
+                </Header>
+                <Content>
+                    <FluentDataGrid Items="AvailableBitumenTanks" ShowHover="true" TGridItem="StorageUnitDto" RowSize="@DataGridRowSize.Medium">
+                        <SelectColumn TGridItem="StorageUnitDto"
+                                      SelectMode="DataGridSelectMode.Multiple"
+                                      SelectFromEntireRow="false"
+                                      @bind-SelectedItems="SelectedBitumenTanks" />
+
+                        <PropertyColumn Property="@(s => s.Name)" Title="Bitumen Tank" />
+                        <PropertyColumn Property="@(s => s.Material == null ? "No Material" : s.Material.Name)" Title="Material" />
+                        <TemplateColumn Title="Take">
+                            <FluentTextField @bind-Value="@context!.Take" AutoComplete="off" Placeholder="0" />
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </Content>
+            </FluentTab>
+            <FluentTab Id="tab-2">
+                <Header>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.ArrowExportUp())" />
+                    <span style="margin-left: 4px;">Filler</span>
+                </Header>
+                <Content>
+                    <FluentDataGrid Items="AvailableFillerSilos" ShowHover="true" TGridItem="StorageUnitDto" RowSize="@DataGridRowSize.Medium">
+                        <SelectColumn TGridItem="StorageUnitDto"
+                                      SelectMode="DataGridSelectMode.Multiple"
+                                      SelectFromEntireRow="false"
+                                      @bind-SelectedItems="SelectedFillerSilos" />
+
+                        <PropertyColumn Property="@(s => s.Name)" Title="Filler Silo" />
+                        <PropertyColumn Property="@(s => s.Material == null ? "No Material" : s.Material.Name)" Title="Material" />
+                        <TemplateColumn Title="Take">
+                            <FluentTextField @bind-Value="@context!.Take" AutoComplete="off" Placeholder="0" />
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </Content>
+            </FluentTab>
+            <FluentTab Id="tab-3">
+                <Header>
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Beaker())" />
+                    <span style="margin-left: 4px;">Additive</span>
+                </Header>
+                <Content>
+                    <FluentDataGrid Items="AvailableAdditiveTanks" ShowHover="true" TGridItem="StorageUnitDto" RowSize="@DataGridRowSize.Medium">
+                        <SelectColumn TGridItem="StorageUnitDto"
+                                      SelectMode="DataGridSelectMode.Multiple"
+                                      SelectFromEntireRow="false"
+                                      @bind-SelectedItems="SelectedAdditiveTanks" />
+
+                        <PropertyColumn Property="@(s => s.Name)" Title="Additive Tank" />
+                        <PropertyColumn Property="@(s => s.Material == null ? "No Material" : s.Material.Name)" Title="Material" />
+                        <TemplateColumn Title="Take">
+                            <FluentTextField @bind-Value="@context!.Take" AutoComplete="off" Placeholder="0" />
+                        </TemplateColumn>
+                    </FluentDataGrid>
+                </Content>
+            </FluentTab>
+        </FluentTabs>
+    </FluentGridItem>
+
+</FluentGrid>
+

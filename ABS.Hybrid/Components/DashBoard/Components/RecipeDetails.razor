@@ -1,0 +1,14 @@
+﻿@if (Recipe is not null)
+{
+    <FluentCard>
+        <h4>Recipe Details</h4>
+        <p>@Recipe.Name</p>
+        <p>@Recipe.Title</p>
+        <p>Created: @Recipe.CreatedDate.ToString("dd MMM yyyy")</p>
+        
+        <FluentButton OnClick="OnDeleteRecipe">
+            Delete
+        </FluentButton>
+    </FluentCard>
+    
+}

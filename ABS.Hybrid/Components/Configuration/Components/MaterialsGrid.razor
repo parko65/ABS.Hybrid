@@ -1,0 +1,94 @@
+﻿@using System.Diagnostics
+@using Service.Contracts
+@using Shared.DataTransferObjects
+
+<FluentCard Height="320px">
+    <FluentDataGrid TGridItem="MaterialDto" Items="Materials!.AsQueryable()" Pagination="@pagination" GridTemplateColumns="1fr 1fr" ShowHover="true" OnRowClick="HandleRowClick">
+        <PropertyColumn Property="@(m => m.MaterialNumber)" Title="Number" />
+        <PropertyColumn Property="@(m => m.Name)" Title="Name" />
+    </FluentDataGrid>
+
+    <FluentPaginator State="@pagination" />
+</FluentCard>
+
+<br />
+
+<EditForm Model="_selectedMaterial" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentStack>
+            <div>
+                <FluentNumberField @bind-Value="_selectedMaterial.MaterialNumber" Label="Material Number" Disabled="!_isEditMode" />
+            </div>
+            <div>
+                <FluentTextField @bind-Value="_selectedMaterial.Name" Label="Name" Disabled="!_isEditMode" />
+            </div>
+        </FluentStack>
+        <div>
+            <FluentSwitch @bind-Value="_isEditMode" Label="Edit Mode" Style="margin-top: 16px;" Disabled="_isDisabled" />
+        </div>
+        <div>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Stealth" Disabled="!_isEditMode">Save</FluentButton>
+        </div>
+    </FluentStack>
+</EditForm>
+
+
+@code {
+    PaginationState pagination = new PaginationState() { ItemsPerPage = 6 };
+
+    [Parameter]
+    public MaterialTypeDto? MaterialType { get; set; } // If needed we can use this
+
+    [Parameter]
+    public IEnumerable<MaterialDto>? Materials { get; set; } // the material type is determined by the parent component.
+
+    [Parameter]
+    public EventCallback OnMaterialEdited { get; set; }
+
+    [Parameter]
+    public EventCallback<MaterialDto> OnMaterialSelected { get; set; }
+
+    [Inject]
+    public IServiceManager Service { get; set; } = default!;
+
+    private InputModel _selectedMaterial { get; set; } = new InputModel();
+
+    private bool _isDisabled => _selectedMaterial == null || _selectedMaterial.Id <= 0;
+    private bool _isEditMode = false;
+
+    private async Task HandleRowClick(FluentDataGridRow<MaterialDto> row)
+    {
+        // Handle the row click event, e.g., navigate to a detail page or show a dialog
+        _selectedMaterial.Id = row.Item!.Id;
+        _selectedMaterial.MaterialNumber = row.Item.MaterialNumber;
+        _selectedMaterial.Name = row.Item.Name;
+
+        await OnMaterialSelected.InvokeAsync(row.Item);
+    }
+
+    private async Task OnSubmit()
+    {
+        var materialForUpdate = new MaterialForUpdateDto
+        {
+            MaterialNumber = _selectedMaterial.MaterialNumber,
+            Name = _selectedMaterial.Name
+        };
+
+        // Call the service to update the material in the db
+        await Service.MaterialService.UpdateMaterialForMaterialTypeAsync(MaterialType!.Id, _selectedMaterial.Id, materialForUpdate,
+            materialTypeTrackChanges: false, materialTrackChanges: true);
+
+        _isEditMode = false;
+        _selectedMaterial = new InputModel();
+
+        await OnMaterialEdited.InvokeAsync();
+    }
+
+    private class InputModel
+    {
+        public int Id { get; set; }
+        public int MaterialNumber { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+}

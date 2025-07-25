@@ -1,0 +1,6 @@
+﻿@using Shared.DataTransferObjects
+
+<FluentLabel Typo="Typography.Subject">Recipes</FluentLabel>
+<FluentListbox TOption="RecipeDto" Items="Recipes" OptionText="@(r => r.Name)" SelectedOptionChanged="HandleRecipeChanged">
+
+</FluentListbox>

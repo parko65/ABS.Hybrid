@@ -6,7 +6,7 @@
 	<MainPackage
 		Name="Hesler.Automation.ABSHybrid"
 		Publisher="CN=ABSHybrid, O=Hesler Automation"
-		Version="1.0.1.0"
+		Version="1.0.2.0"
 		ProcessorArchitecture="x64"
 		Uri="https://github.com/parko65/ABS.Hybrid/releases/latest/download/AutoUpdate.msix"/>
 	<UpdateSettings>

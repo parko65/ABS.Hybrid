@@ -41,7 +41,8 @@ jobs:
      run: certutil -user -p ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }} -Silent -importpfx cert.pfx NoRoot
 
    - name: Publish
-     run: dotnet publish -c Release -f net9.0-windows10.0.19041.0 --self-contained true -r win-x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint=${{ secrets.SIGNING_CERTIFICATE_THUMBPRINT }}
+     run: dotnet publish -c Release -f net9.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint=${{ secrets.SIGNING_CERTIFICATE_THUMBPRINT }}
+     working-directory: ./ABS.Hybrid
 
    - name: Extract Version
      id: extractVersion

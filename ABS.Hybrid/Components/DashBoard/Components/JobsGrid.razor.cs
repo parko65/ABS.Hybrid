@@ -10,7 +10,7 @@ public partial class JobsGrid
 
     private JobDto? SelectedJob { get; set; }
 
-    PaginationState pagination = new() { ItemsPerPage = 10 };
+    PaginationState pagination = new() { ItemsPerPage = 8 };
 
     [Parameter]
     public EventCallback<JobDto?> OnJobSelected { get; set; }
